@@ -1,0 +1,42 @@
+<html>
+  <head>
+
+  </head>
+  <body>
+    <h1>Mandelbrot Set</h1>
+    <div>
+      <canvas id="mandelbrot" width="800" height="800"></canvas>
+    </div>
+    <button id="reset">Reset</button>
+  </body>
+
+  <script type="text/javascript">
+    const resetBtn = document.getElementById('reset')
+    const canvas = document.getElementById('mandelbrot');
+    const ctx = canvas.getContext('2d');
+
+    const draw = () => {
+      for (let x = 0; x < 800; x+=100) {
+        for (let y = 0; y < 800; y+=100) {
+          const img = new Image()
+          img.onload = function() {
+            ctx.drawImage(img, x, y);
+          }
+          img.src = `/mandelbrot/section/${x}/${y}`
+        }
+      }
+    }
+
+    const sendZoom = (event) => fetch(`/mandelbrot/zoom/${event.offsetX}/${event.offsetY}`, { method: "POST"})
+    const zoom = (event) => sendZoom(event).then(() => window.location.reload())
+    const reset = () => fetch("/mandelbrot/reset", { method: "POST" }).then(() => window.location.reload())
+
+    draw()
+    canvas.onclick = (event) => zoom(event)
+    resetBtn.onclick = () => reset()
+
+  </script>
+
+  <style type="text/css">
+  </style>
+</html>
